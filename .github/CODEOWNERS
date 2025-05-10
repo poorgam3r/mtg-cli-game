@@ -1,0 +1,9 @@
+# CODEOWNERS for MTG CLI Game
+
+# Set @poorgam3r as the default code owner for the entire repository
+* @poorgam3r
+
+# Example (optional): set specific owners for folders or files
+# /index.js @poorgam3r
+# /package.json @poorgam3r
+# /.github/ @poorgam3r

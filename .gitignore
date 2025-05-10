@@ -1,0 +1,26 @@
+# Node.js
+node_modules/
+npm-debug.log
+.env
+
+# MacOS
+.DS_Store
+
+# Logs
+logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+
+# AWS CLI files (if you copy configs)
+.aws/
+
+# VSCode workspace settings
+.vscode/
+
+# Codespaces config (optional)
+.devcontainer/
+
+# OS backup files
+*.swp
+*.swo

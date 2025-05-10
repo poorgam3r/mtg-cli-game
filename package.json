@@ -1,0 +1,27 @@
+{
+  "name": "mtg-cli-game",
+  "version": "1.0.0",
+  "description": "Magic: The Gathering CLI deck builder with Supabase and AWS Secrets Manager",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.500.0",
+    "@supabase/supabase-js": "^2.39.6",
+    "axios": "^1.6.7",
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "globals": "^16.1.0",
+    "prettier": "^3.5.3"
+  }
+}
