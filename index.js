@@ -29,6 +29,7 @@ async function mainMenu() {
       'View deck',
       'Remove card from deck',
       'Submit deck',
+      'Help / About',
       'Exit',
     ],
   });
@@ -42,6 +43,8 @@ async function mainMenu() {
       return removeCard();
     case 'Submit deck':
       return submitDeck();
+    case 'Help / About':
+      return showHelp();
     case 'Exit':
       console.log(chalk.green('Goodbye!'));
       process.exit();
@@ -145,6 +148,29 @@ async function submitDeck() {
     console.log(chalk.red('Failed to submit deck:'), err.message);
   }
 
+  mainMenu();
+}
+
+function showHelp() {
+  console.log(`
+=== MTG CLI Game Help ===
+
+Commands:
+- Search for a card → Find and add cards from Scryfall
+- View deck → Show your current deck
+- Remove card from deck → Delete a card from your deck
+- Submit deck → Save deck to Supabase
+- Help / About → Show this help menu
+- Exit → Quit the app
+
+=== Credits ===
+- Created by: poorgam3r
+- Repository: https://github.com/poorgam3r/mtg-cli-game
+- Powered by: Scryfall API (https://scryfall.com/docs/api)
+- Special thanks to the open-source community ❤️
+
+Happy brewing!
+  `);
   mainMenu();
 }
 
