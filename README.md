@@ -1,13 +1,13 @@
 # MTG CLI Game
 
-![License](https://img.shields.io/github/license/poorgam3r/mtg-cli-game)
+[![License](https://img.shields.io/github/license/poorgam3r/mtg-cli-game.svg)](LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/poorgam3r/mtg-cli-game.svg)](https://github.com/poorgam3r/mtg-cli-game/graphs/contributors)
+[![CI](https://github.com/poorgam3r/mtg-cli-game/actions/workflows/ci.yml/badge.svg)](https://github.com/poorgam3r/mtg-cli-game/actions)
 ![Issues](https://img.shields.io/github/issues/poorgam3r/mtg-cli-game)
 ![Pull Requests](https://img.shields.io/github/issues-pr/poorgam3r/mtg-cli-game)
 ![Last Commit](https://img.shields.io/github/last-commit/poorgam3r/mtg-cli-game)
 ![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 ![ESLint](https://img.shields.io/badge/linting-ESLint-blue)
-![CI](https://github.com/poorgam3r/mtg-cli-game/actions/workflows/ci.yml/badge.svg)
-[![Contributors](https://img.shields.io/github/contributors/poorgam3r/mtg-cli-game.svg)](https://github.com/poorgam3r/mtg-cli-game/graphs/contributors)
 
 A command-line Magic: The Gathering deck builder using Node.js, Supabase, AWS Secrets Manager, and Scryfall API.
 
