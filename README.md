@@ -7,6 +7,7 @@
 ![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 ![ESLint](https://img.shields.io/badge/linting-ESLint-blue)
 ![CI](https://github.com/poorgam3r/mtg-cli-game/actions/workflows/ci.yml/badge.svg)
+[![Contributors](https://img.shields.io/github/contributors/poorgam3r/mtg-cli-game.svg)](https://github.com/poorgam3r/mtg-cli-game/graphs/contributors)
 
 A command-line Magic: The Gathering deck builder using Node.js, Supabase, AWS Secrets Manager, and Scryfall API.
 
