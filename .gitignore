@@ -7,21 +7,25 @@ npm-debug.log
 .DS_Store
 
 # Logs
-logs
+logs/
 *.log
 yarn-debug.log*
 yarn-error.log*
 
-# AWS CLI files (if you copy configs)
+# AWS CLI files and dist
 .aws/
+aws/
+awscliv2.zip
+
+# Supabase .env or local config (if any)
+.supabase/
 
 # VSCode workspace settings
 .vscode/
 
-# Codespaces config (optional)
+# Codespaces config
 .devcontainer/
 
 # OS backup files
 *.swp
 *.swo
-awscliv2.zip
