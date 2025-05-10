@@ -8,7 +8,9 @@
     "start": "node index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "echo \"No tests yet\" && exit 0",
+    "build": "echo \"No build step yet\" && exit 0"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.500.0",
