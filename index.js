@@ -12,6 +12,11 @@ const { createClient } = require('@supabase/supabase-js');
 let deck = [];
 let supabase;
 
+// ⏰ Helper function for delay
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function getSecret(secretName) {
   const client = new SecretsManagerClient({ region: 'ap-southeast-1' });
   const command = new GetSecretValueCommand({ SecretId: secretName });
@@ -66,6 +71,22 @@ async function searchCard() {
     console.log(chalk.yellow(`${card.name} (${card.type_line})`));
     console.log(chalk.gray(card.oracle_text));
 
+    // 💾 Save to cached_cards in Supabase
+    const { error } = await supabase.from('cached_cards').upsert({
+      id: card.id,
+      name: card.name,
+      type_line: card.type_line,
+      oracle_text: card.oracle_text,
+      raw_json: card,
+      last_updated: new Date().toISOString(),
+    });
+
+    if (error) {
+      console.log(chalk.red('Failed to save card to database:'), error.message);
+    } else {
+      console.log(chalk.green('✅ Card saved to database.'));
+    }
+
     const { add } = await inquirer.prompt({
       type: 'confirm',
       name: 'add',
@@ -76,11 +97,11 @@ async function searchCard() {
       deck.push({ id: card.id, name: card.name });
       console.log(chalk.green('Card added to deck!'));
     }
-  } catch (err) {
-    console.error(err);
+  } catch {
     console.log(chalk.red('Card not found.'));
   }
 
+  await wait(100); // ⏰ Respect Scryfall API rate limits
   mainMenu();
 }
 
