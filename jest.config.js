@@ -12,4 +12,6 @@ module.exports = {
   ],
   collectCoverage: true,
   coverageDirectory: 'coverage',
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'], // Ignore the dist directory
+  modulePathIgnorePatterns: ['/dist/'], // Ignore modules in the dist directory
 };

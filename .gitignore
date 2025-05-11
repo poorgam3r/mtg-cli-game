@@ -16,6 +16,7 @@ yarn-error.log*
 .aws/
 aws/
 awscliv2.zip
+dist/
 
 # Supabase .env or local config (if any)
 .supabase/
