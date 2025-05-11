@@ -4,6 +4,7 @@
 * @poorgam3r
 
 # Example (optional): set specific owners for folders or files
-# /index.js @poorgam3r
+# /index.ts @poorgam3r
 # /package.json @poorgam3r
 # /.github/ @poorgam3r
+# /README.md @poorgam3r

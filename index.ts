@@ -1,31 +1,52 @@
 #!/usr/bin/env node
 
-const inquirer = require('inquirer').default;
-const axios = require('axios');
-const chalk = require('chalk').default;
-const {
+import inquirer from 'inquirer';
+import axios from 'axios';
+import chalk from 'chalk';
+import {
   SecretsManagerClient,
   GetSecretValueCommand,
-} = require('@aws-sdk/client-secrets-manager');
-const { createClient } = require('@supabase/supabase-js');
+} from '@aws-sdk/client-secrets-manager';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-let deck = [];
-let supabase;
+// Define types and interfaces
+interface Card {
+  id: string;
+  name: string;
+  type_line: string;
+  oracle_text: string;
+  raw_json: object;
+}
+
+interface Secret {
+  supabaseUrl: string;
+  supabaseKey: string;
+}
+
+interface DeckCard {
+  id: string;
+  name: string;
+}
+
+let deck: DeckCard[] = [];
+let supabase: SupabaseClient | null = null;
 
 // ⏰ Helper function for delay
-function wait(ms) {
+export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function getSecret(secretName) {
+// Fetch secrets from AWS Secrets Manager
+export async function getSecret(secretName: string): Promise<Secret> {
   const client = new SecretsManagerClient({ region: 'ap-southeast-1' });
   const command = new GetSecretValueCommand({ SecretId: secretName });
   const data = await client.send(command);
-  return JSON.parse(data.SecretString);
+  return JSON.parse(data.SecretString || '{}') as Secret;
 }
 
-async function mainMenu() {
-  const { action } = await inquirer.prompt({
+// Main menu function
+async function mainMenu(): Promise<void> {
+  const { action } = await inquirer.prompt<{ action: string }>({
     type: 'list',
     name: 'action',
     message: 'What would you like to do?',
@@ -41,11 +62,11 @@ async function mainMenu() {
 
   switch (action) {
     case 'Search for a card':
-      return searchCard();
+      return searchCardPrompt();
     case 'View deck':
-      return viewDeck();
+      return viewDeckPrompt();
     case 'Remove card from deck':
-      return removeCard();
+      return removeCardPrompt();
     case 'Submit deck':
       return submitDeck();
     case 'Help / About':
@@ -56,38 +77,48 @@ async function mainMenu() {
   }
 }
 
-async function searchCard() {
-  const { name } = await inquirer.prompt({
+// Search for a card
+export async function searchCard(name: string): Promise<Card> {
+  const response = await axios.get<Card>(
+    `https://api.scryfall.com/cards/named?fuzzy=${name}`
+  );
+  return response.data;
+}
+
+async function searchCardPrompt(): Promise<void> {
+  const { name } = await inquirer.prompt<{ name: string }>({
     type: 'input',
     name: 'name',
     message: 'Enter card name:',
   });
 
   try {
-    const res = await axios.get(
-      `https://api.scryfall.com/cards/named?fuzzy=${name}`
-    );
-    const card = res.data;
+    const card = await searchCard(name);
     console.log(chalk.yellow(`${card.name} (${card.type_line})`));
     console.log(chalk.gray(card.oracle_text));
 
     // 💾 Save to cached_cards in Supabase
-    const { error } = await supabase.from('cached_cards').upsert({
-      id: card.id,
-      name: card.name,
-      type_line: card.type_line,
-      oracle_text: card.oracle_text,
-      raw_json: card,
-      last_updated: new Date().toISOString(),
-    });
+    if (supabase) {
+      const { error } = await supabase.from('cached_cards').upsert({
+        id: card.id,
+        name: card.name,
+        type_line: card.type_line,
+        oracle_text: card.oracle_text,
+        raw_json: card,
+        last_updated: new Date().toISOString(),
+      });
 
-    if (error) {
-      console.log(chalk.red('Failed to save card to database:'), error.message);
-    } else {
-      console.log(chalk.green('✅ Card saved to database.'));
+      if (error) {
+        console.log(
+          chalk.red('Failed to save card to database:'),
+          error.message
+        );
+      } else {
+        console.log(chalk.green('✅ Card saved to database.'));
+      }
     }
 
-    const { add } = await inquirer.prompt({
+    const { add } = await inquirer.prompt<{ add: boolean }>({
       type: 'confirm',
       name: 'add',
       message: 'Add this card to your deck?',
@@ -105,7 +136,17 @@ async function searchCard() {
   mainMenu();
 }
 
-function viewDeck() {
+// View the deck
+export function viewDeck(deck: DeckCard[]): void {
+  if (deck.length === 0) {
+    console.log('Your deck is empty.');
+  } else {
+    console.log('Your deck:');
+    deck.forEach((card, index) => console.log(`${index + 1}. ${card.name}`));
+  }
+}
+
+function viewDeckPrompt(): void {
   if (deck.length === 0) {
     console.log(chalk.gray('Your deck is empty.'));
   } else {
@@ -115,13 +156,14 @@ function viewDeck() {
   mainMenu();
 }
 
-async function removeCard() {
+// Remove a card from the deck
+export async function removeCard(deck: DeckCard[]): Promise<void> {
   if (deck.length === 0) {
     console.log(chalk.gray('Your deck is empty.'));
-    return mainMenu();
+    return;
   }
 
-  const { index } = await inquirer.prompt({
+  const { index } = await inquirer.prompt<{ index: string }>({
     type: 'input',
     name: 'index',
     message: 'Enter card number to remove:',
@@ -134,17 +176,21 @@ async function removeCard() {
   } else {
     console.log(chalk.red('Invalid index.'));
   }
+}
 
+async function removeCardPrompt(): Promise<void> {
+  await removeCard(deck);
   mainMenu();
 }
 
-async function submitDeck() {
+// Submit the deck
+async function submitDeck(): Promise<void> {
   if (!supabase) {
     console.log(chalk.red('Supabase client not initialized.'));
     return mainMenu();
   }
 
-  const { deckName } = await inquirer.prompt({
+  const { deckName } = await inquirer.prompt<{ deckName: string }>({
     type: 'input',
     name: 'deckName',
     message: 'Enter deck name:',
@@ -165,14 +211,17 @@ async function submitDeck() {
       chalk.green(`Deck "${deckName}" submitted with ${deck.length} cards!`)
     );
     deck = []; // clear local deck
-  } catch (err) {
-    console.log(chalk.red('Failed to submit deck:'), err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message);
+    }
   }
 
   mainMenu();
 }
 
-function showHelp() {
+// Show help menu
+function showHelp(): void {
   console.log(`
 === MTG CLI Game Help ===
 
@@ -196,17 +245,21 @@ Happy brewing!
 }
 
 // 🚀 Start the app with secrets and Supabase setup
-(async () => {
-  try {
-    const secret = await getSecret('mtg-cli-secrets');
-    const supabaseUrl = secret.supabaseUrl;
-    const supabaseKey = secret.supabaseKey;
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    try {
+      const secret = await getSecret('mtg-cli-secrets');
+      const supabaseUrl = secret.supabaseUrl;
+      const supabaseKey = secret.supabaseKey;
 
-    console.log('✅ Supabase loaded:', supabaseUrl);
+      console.log('✅ Supabase loaded:', supabaseUrl);
 
-    supabase = createClient(supabaseUrl, supabaseKey);
-    mainMenu();
-  } catch (err) {
-    console.error(chalk.red('Failed to initialize app:'), err.message);
-  }
-})();
+      supabase = createClient(supabaseUrl, supabaseKey);
+      mainMenu();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(chalk.red('Failed to initialize app:'), err.message);
+      }
+    }
+  })();
+}
