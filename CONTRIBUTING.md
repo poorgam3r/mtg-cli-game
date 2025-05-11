@@ -32,4 +32,12 @@ Thank you for your interest in contributing!
 - Follow JavaScript best practices.
 - Test your changes before submitting.
 
+## Running Tests
+
+Before submitting your changes, ensure all tests pass by running:
+
+```bash
+npm test
+```
+
 We appreciate your help!
