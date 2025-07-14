@@ -18,7 +18,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.500.0",
+    "@aws-sdk/client-secrets-manager": "^3.844.0",
     "@supabase/supabase-js": "^2.39.6",
     "axios": "^1.6.7",
     "chalk": "^5.3.0",
